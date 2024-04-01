@@ -3,7 +3,9 @@ package pro.abned.training.acid.services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pro.abned.training.acid.entities.Account;
+import pro.abned.training.acid.entities.Operation;
 import pro.abned.training.acid.repositories.AccountRepository;
+import pro.abned.training.acid.repositories.OperationRepository;
 
 import java.util.Optional;
 
@@ -17,10 +19,11 @@ public class DepotUnitTest {
     @BeforeEach
     void setUp() {
         AccountRepository accountRepository = mock(AccountRepository.class);
+        OperationRepository operationRepository = mock(OperationRepository.class);
 
         when(accountRepository.findById(eq(101L))).thenReturn(Optional.of(Account.builder().id(1L).balance(1000.0).build()));
 
-        depot = new Depot(accountRepository);
+        depot = new Depot(accountRepository, operationRepository);
     }
 
     @Test
@@ -29,7 +32,7 @@ public class DepotUnitTest {
         account.setId(1L);
 
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            depot.credit(account, -100.0);
+            depot.credit(account, Operation.builder().amount(-100.0).build());
         });
         assertEquals("depot.amount.negative", e.getMessage());
     }
@@ -40,7 +43,7 @@ public class DepotUnitTest {
         account.setId(99L);
 
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            depot.credit(account, 100.0);
+            depot.credit(account, Operation.builder().amount(100.0).build());
         });
         assertEquals("depot.account.not_found", e.getMessage());
     }

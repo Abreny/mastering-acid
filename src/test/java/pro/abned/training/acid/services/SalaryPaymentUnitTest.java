@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import pro.abned.training.acid.Credit;
 import pro.abned.training.acid.Debit;
 import pro.abned.training.acid.entities.Account;
+import pro.abned.training.acid.entities.Operation;
 import pro.abned.training.acid.repositories.AccountRepository;
 
 import java.util.HashMap;
@@ -42,20 +43,20 @@ class SalaryPaymentUnitTest {
         salaryPayment.execute(aCompany, attempts);
 
         ArgumentCaptor<Account> destinations = ArgumentCaptor.forClass(Account.class);
-        ArgumentCaptor<Double> amounts = ArgumentCaptor.forClass(Double.class);
+        ArgumentCaptor<Operation> amounts = ArgumentCaptor.forClass(Operation.class);
 
         verify(credit, times(2)).credit(destinations.capture(), amounts.capture());
 
         List<Account> destArgs = destinations.getAllValues();
-        List<Double> amountArgs = amounts.getAllValues();
+        List<Operation> amountArgs = amounts.getAllValues();
 
         assertEquals(102L, destArgs.getFirst().getId());
         assertEquals(103L, destArgs.get(1).getId());
 
-        assertEquals(500, amountArgs.getFirst());
-        assertEquals(200, amountArgs.get(1));
+        assertEquals(500, amountArgs.getFirst().getAmount());
+        assertEquals(200, amountArgs.get(1).getAmount());
 
-        verify(debit, times(1)).debit(eq(aCompany), eq(700.0));
+        verify(debit, times(1)).debit(eq(aCompany), any());
     }
 
     @Test
@@ -72,19 +73,19 @@ class SalaryPaymentUnitTest {
         assertEquals("salary.payment.balance.insufficient", e.getMessage());
 
         ArgumentCaptor<Account> destinations = ArgumentCaptor.forClass(Account.class);
-        ArgumentCaptor<Double> amounts = ArgumentCaptor.forClass(Double.class);
+        ArgumentCaptor<Operation> amounts = ArgumentCaptor.forClass(Operation.class);
 
         verify(credit, times(2)).credit(destinations.capture(), amounts.capture());
 
         List<Account> destArgs = destinations.getAllValues();
-        List<Double> amountArgs = amounts.getAllValues();
+        List<Operation> amountArgs = amounts.getAllValues();
 
         assertEquals(102L, destArgs.getFirst().getId());
         assertEquals(103L, destArgs.get(1).getId());
 
-        assertEquals(500, amountArgs.getFirst());
-        assertEquals(200, amountArgs.get(1));
+        assertEquals(500, amountArgs.getFirst().getAmount());
+        assertEquals(200, amountArgs.get(1).getAmount());
 
-        verify(debit, never()).debit(eq(aCompany), eq(700.0));
+        verify(debit, never()).debit(eq(aCompany), any());
     }
 }

@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 @Import(AppConfig.class)
 public class TestDatabaseConfig {
     @Bean
-    public DataSource dataSource() {
+    public DataSource memoryDataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:db/schema.sql")

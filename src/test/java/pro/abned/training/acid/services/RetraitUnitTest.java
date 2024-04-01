@@ -3,7 +3,9 @@ package pro.abned.training.acid.services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pro.abned.training.acid.entities.Account;
+import pro.abned.training.acid.entities.Operation;
 import pro.abned.training.acid.repositories.AccountRepository;
+import pro.abned.training.acid.repositories.OperationRepository;
 
 import java.util.Optional;
 
@@ -17,10 +19,11 @@ public class RetraitUnitTest {
     @BeforeEach
     void setUp() {
         AccountRepository accountRepository = mock(AccountRepository.class);
+        OperationRepository operationRepository = mock(OperationRepository.class);
 
         when(accountRepository.findById(eq(101L))).thenReturn(Optional.of(Account.builder().id(1L).balance(1000.0).build()));
 
-        retrait = new Retrait(accountRepository);
+        retrait = new Retrait(accountRepository, operationRepository);
     }
 
     @Test
@@ -28,7 +31,7 @@ public class RetraitUnitTest {
         Account account = Account.builder().id(1L).build();
 
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            retrait.debit(account, -100.0);
+            retrait.debit(account, Operation.builder().amount(-100.0).build());
         });
         assertEquals("retrait.amount.negative", e.getMessage());
     }
@@ -38,7 +41,7 @@ public class RetraitUnitTest {
         Account account = Account.builder().id(100L).build();
 
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            retrait.debit(account, 100.0);
+            retrait.debit(account, Operation.builder().amount(100.0).build());
         });
         assertEquals("retrait.account.not_found", e.getMessage());
     }
@@ -48,7 +51,7 @@ public class RetraitUnitTest {
         Account account = Account.builder().id(101L).build();
 
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
-            retrait.debit(account, 10000.0);
+            retrait.debit(account, Operation.builder().amount(10000.0).build());
         });
         assertEquals("retrait.amount.insufficient", e.getMessage());
     }

@@ -7,14 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.jdbc.JdbcTestUtils;
-import pro.abned.training.acid.configs.TestDatabaseConfig;
+import pro.abned.training.acid.configs.DatabaseConfig;
 import pro.abned.training.acid.entities.Account;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestDatabaseConfig.class)
+@ContextConfiguration(classes = DatabaseConfig.class)
 class AccountRepositoryTest {
     @Autowired
     AccountRepository accountRepository;
